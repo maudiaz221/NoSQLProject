@@ -9,11 +9,12 @@ cliente = pymongo.MongoClient("mongodb://localhost:27017/")
 db = cliente["RM"]
 
 #creamos la coleccion
-coleccion = db['characters']
+colecciones = ['locations','characters','episodes']
 
-def fetch_RM_data():
+
+def fetch_RM_data(url):
     
-    url = 'https://rickandmortyapi.com/api/character'
+
     characters = []
     r = requests.get(url)
     data = r.json()
@@ -43,10 +44,22 @@ def insertData(data,collection):
 
 
 
-
 if __name__ == "__main__":
-    data = fetch_RM_data()
-    insertData(data,coleccion)
+    urls = ['https://rickandmortyapi.com/api/location','https://rickandmortyapi.com/api/character','https://rickandmortyapi.com/api/episode']
+    
+    for url in urls:
+        data = fetch_RM_data(url)
+        if url == urls[0]:
+            collection = db[colecciones[0]]
+            insertData(data,collection)
+        elif url == urls[1]:
+            collection = db[colecciones[1]]
+            insertData(data,collection)
+        elif url == urls[2]:
+            collection = db[colecciones[2]]
+            insertData(data,collection)
+        else:
+            print("error al insertar los datos")
     
  
 
