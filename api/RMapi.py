@@ -45,20 +45,58 @@ def mongo():
         print("Datos insertados")
         
     urls = ['https://rickandmortyapi.com/api/location','https://rickandmortyapi.com/api/character','https://rickandmortyapi.com/api/episode']
-        
+    #lo guarda en la coleccion dependiendo del nombre
     for url in urls:
         data = fetch_RM_data(url)
         if url == urls[0]:
-            collection = db[colecciones[0]]
-            insertData(data,collection)
+            locations = db[colecciones[0]]
+            insertData(data,locations)
         elif url == urls[1]:
             collection = db[colecciones[1]]
             insertData(data,collection)
         elif url == urls[2]:
-            collection = db[colecciones[2]]
-            insertData(data,collection)
+            episodes = db[colecciones[2]]
+            insertData(data,episodes)
         else:
             print("error al insertar los datos")
+    
+    try:
+        # Query 1
+        query_1_result = collection.aggregate([
+            {"$match": {"species": "Human", "gender": "Male"}},
+            {"$project": {"_id": 0, "species": 1, "gender": 1, "name": 1}}
+        ])
+
+        print("Query 1 Result:")
+        for document in query_1_result:
+            print(document)
+
+        # Query 2
+        query_2_result = collection.aggregate([
+            {"$unwind": "$origin"},
+            {"$project": {"_id": 0, "origin.name": 1, "status": 1}},
+            {"$match": {"status": "Alive"}},
+            {"$group": {"_id": "$origin.name", "conteo": {"$sum": 1}}}
+        ])
+
+        print("\nQuery 2 Result:")
+        for document in query_2_result:
+            print(document)
+
+        # Query 3
+        query_3_result = collection.aggregate([
+            {"$unwind": "$location"},
+            {"$project": {"location.name": 1, "id": 1, "species": 1}},
+            {"$group": {"_id": "$species", "locationArray": {"$push": "$location.name"}}},
+            {"$project": {"name": "$_id", "_id": 1, "locationArray": 1}},
+            {"$addFields": {"totalHabitantes": {"$sum": 1}}}
+        ])
+
+        print("\nQuery 3 Result:")
+        for document in query_3_result:
+            print(document)
+    except:
+        print("")
 
 
 

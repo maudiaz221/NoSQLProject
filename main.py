@@ -1,6 +1,6 @@
-from RMapi import mongo
-from neo import neo
-from cass import cass
+from api.RMapi import mongo
+from api.neo import neo
+from api.cass import cass
 
 def main():
     mongo()
