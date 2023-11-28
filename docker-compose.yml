@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-data:/data/db
+
+  cassandra:
+    image: cassandra
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+
+  neo4j:
+    image: neo4j
+    container_name: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+
+  python-scripts:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: python_scripts
+  
+    depends_on:
+      - mongo
+      - cassandra
+      - neo4j
+    
+

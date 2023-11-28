@@ -3,7 +3,7 @@ from neo4j import GraphDatabase
 
 
 
-def main():
+def neo():
         # Neo4j connection parameters
     uri = "bolt://localhost:7687"
     username = "neo4j"
@@ -54,4 +54,4 @@ def main():
     
                 
 if __name__ == "__main__":
-    main()
+    neo()
