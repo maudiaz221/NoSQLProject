@@ -98,11 +98,10 @@ MATCH (character:character)-[:APPEARED_IN]->(episode:episode)
                             RETURN character
 ```
 
-Ubicaciones average por episodio
+Numero de personajes en episodio 15
 ```
-MATCH (e:episode)-[:APPEARED_IN]->(c:character)-[:LOCATED_IN]->(l:location)
-WITH e, COUNT(DISTINCT l) AS locationCount
-RETURN AVG(locationCount) AS avgLocationsPerEpisode
+MATCH (:Episode {episode_id: 15})<-[:APPEARED_IN]-(character:Character)
+RETURN count(character) AS characterCount;
 
 ```
 
