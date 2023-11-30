@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Command to run your Python scripts
-CMD ["sh", "-c", "sleep 45 && python3 main.py"]
+CMD ["sh", "-c", "sleep 50 && python3 main.py"]

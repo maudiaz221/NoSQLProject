@@ -11,7 +11,8 @@ def cass():
     
     KEYSPACE = "test"
     #crea la sesion
-    cluster = Cluster()
+    contact_points = ['cassandra']
+    cluster = Cluster(contact_points,port=9042)
     session = cluster.connect()
 
     #crea el keyspace
@@ -45,7 +46,7 @@ def cass():
             PRIMARY KEY(character_id));
         """)
 
-    df = pd.read_csv('data/characters.csv')
+    df = pd.read_csv('api/data/characters.csv')
 
     for index, row in df.iterrows():
         row = row.fillna('') 
@@ -59,6 +60,10 @@ def cass():
             pd.to_datetime(row['created']).strftime('%Y-%m-%d'), row['episode_id']
         ))
         
+    session.execute("""
+        DROP TABLE IF EXISTS test.episodes;
+        """)
+    
     # crea tabla 2
     session.execute("""
         CREATE TABLE IF NOT EXISTS episodes (
@@ -74,7 +79,7 @@ def cass():
     """)
 
     # Read data from episodes.csv
-    df_episodes = pd.read_csv('data/episodes.csv')
+    df_episodes = pd.read_csv('api/data/episodes.csv')
 
     # Insert data into the episode table
     for index, row in df_episodes.iterrows():
@@ -87,6 +92,11 @@ def cass():
             row['episode_id'], row['name'], pd.to_datetime(row['air_date']).strftime('%Y-%m-%d'),
             row['episode'], row['character_id'], row['url'], pd.to_datetime(row['created']).strftime('%Y-%m-%d')
         ))
+        
+    
+    session.execute("""
+        DROP TABLE IF EXISTS test.locations;
+        """)
 
     # crea tabla 3
     session.execute("""
@@ -103,7 +113,7 @@ def cass():
     """)
 
     # Read data from locations.csv
-    df_locations = pd.read_csv('data/locations.csv')
+    df_locations = pd.read_csv('api/data/locations.csv')
     df_locations['character_id'] = df_locations['character_id'].fillna(0).astype(int)
 
    # ...
@@ -118,37 +128,39 @@ def cass():
             row['location_id'], row['name'], row['type'], row['dimension'], row['url'],
             pd.to_datetime(row['created']).strftime('%Y-%m-%d'), row['character_id']
         ))
+    
+    print('datos insertados')
 
     
-    try:
-                # Las queries
-        query_1 = "SELECT name FROM episodes;"
-        query_2 = "SELECT * FROM characters WHERE character_id=671;";
-        query_3 = "SELECT * FROM locations;"
+    # try:
+    #             # Las queries
+    #     query_1 = "SELECT name FROM episodes;"
+    #     query_2 = "SELECT * FROM characters WHERE character_id=671;";
+    #     query_3 = "SELECT * FROM locations;"
 
-        # Funcion que ejecuta query
-        def run_query(query):
-            result = session.execute(query)
-            return result
+    #     # Funcion que ejecuta query
+    #     def run_query(query):
+    #         result = session.execute(query)
+    #         return result
 
-        # ejecuta
-        print("Query 1 Result:")
-        result_1 = run_query(query_1)
-        for row in result_1:
-            print(row)
+    #     # ejecuta
+    #     print("Query 1 Result:")
+    #     result_1 = run_query(query_1)
+    #     for row in result_1:
+    #         print(row)
 
-        print("\nQuery 2 Result:")
-        result_2 = run_query(query_2)
-        for row in result_2:
-            print(row)
+    #     print("\nQuery 2 Result:")
+    #     result_2 = run_query(query_2)
+    #     for row in result_2:
+    #         print(row)
 
-        print("\nQuery 3 Result:")
-        result_3 = run_query(query_3)
-        for row in result_3:
-            print(row)
+    #     print("\nQuery 3 Result:")
+    #     result_3 = run_query(query_3)
+    #     for row in result_3:
+    #         print(row)
         
-    except:
-        print("")
+    # except:
+    #     print("")
 
 
 cass()

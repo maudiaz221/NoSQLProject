@@ -6,14 +6,16 @@ services:
     container_name: mongo
     ports:
       - "27017:27017"
-    volumes:
-      - ./mongo-data:/data/db
+    networks:
+      - mynetwork
 
   cassandra:
     image: cassandra
     container_name: cassandra
     ports:
       - "9042:9042"
+    networks:
+      - mynetwork
 
   neo4j:
     image: neo4j
@@ -21,6 +23,10 @@ services:
     ports:
       - "7474:7474"
       - "7687:7687"
+    environment:
+      - NEO4J_AUTH:neo4j/12345678
+    networks:
+      - mynetwork
 
   python-scripts:
     build:
@@ -32,5 +38,11 @@ services:
       - mongo
       - cassandra
       - neo4j
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
+    driver: bridge
+      
     
 

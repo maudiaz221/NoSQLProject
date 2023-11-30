@@ -3,3 +3,4 @@ pymongo
 requests
 neo4j
 cassandra-driver
+re
